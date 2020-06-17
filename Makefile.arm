@@ -1,0 +1,48 @@
+CROSSCOMPLIER=/opt/f1c100s/usr/bin/arm-linux-
+INCLUDES	= -I./
+DEBUG_FLAGS	= -g
+RELEASE_FLAGS	= -O2 -s
+RESOURCE_FLAGS	= `../tools/wx-config --rcflags`
+
+CXX=$(CROSSCOMPLIER)g++
+STRIP=$(CROSSCOMPLIER)strip
+
+CPPFLAGS = $(DEBUG_FLAGS)
+LDFLAGS = $(LDFLAGS_INC)
+CXXFLAGS2= -fPIC -DPIC
+LDFLAGS2 = -shared -fPIC
+CXXFLAGS	=  -Wall -Wextra `../tools/wx-config --cxxflags` $(INCLUDES)
+#LIBS		= `./wx-config --libs core,base,richtext,adv,html,xml` -s
+#LIBS		= `./wx-config --libs core,base,adv` 
+#LIBS		= `./wx-config --libs` -s
+#LIBS        = -lpthread -lwx_dfbunivu_xrc-3.0-arm-linux -lwx_dfbunivu_html-3.0-arm-linux -lwx_dfbunivu_qa-3.0-arm-linux -lwx_dfbunivu_adv-3.0-arm-linux -lwx_dfbunivu_core-3.0-arm-linux -lwx_baseu_xml-3.0-arm-linux -lwx_baseu_net-3.0-arm-linux -lwx_baseu-3.0-arm-linux -lwx_dfbunivu_aui-3.0-arm-linux 
+
+LIBS        = -lpthread -lwx_baseu-3.0-arm-linux -lwx_dfbunivu_core-3.0-arm-linux -lwx_dfbunivu_xrc-3.0-arm-linux -lwx_dfbunivu_adv-3.0-arm-linux
+
+OBJS = win32_api.o \
+	xdata.o \
+	xgdi.o \
+	xcontrol.o \
+	xwindow.o \
+	xdialog.o \
+	xdocview.o \
+	xapp.o xthread.o xio.o\
+	xEvtHandler.o \
+	xMessageHandler.o \
+	xscroll.o xprint.o xgui.o
+
+TARGET = ./libxgui.so
+	
+.cpp.o :
+	$(CXX) -c -o $*.o $< $(CXXFLAGS) $(CXXFLAGS2) $(CPPFLAGS) $(CPPFLAGS2)
+
+	 
+all: $(OBJS)
+	$(CXX) -o $(TARGET) $(OBJS) $(LDFLAGS) $(LDFLAGS2) $(LIBS)
+
+release: all
+	$(STRIP) $(TARGET)
+
+clean:
+	rm -f $(OBJS)
+	rm -f $(TARGET)
